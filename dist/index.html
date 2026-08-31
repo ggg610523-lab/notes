@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:;">
+  <title>Notes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="root">
+    <div class="titlebar">
+      <button class="hamburger-btn" id="hamburger-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+      <div class="titlebar-drag">
+        <span class="titlebar-label">Notes</span>
+      </div>
+      <div class="win-controls">
+        <button class="wc-btn wc-btn-min" id="btn-minimize" title="Minimize">
+          <svg width="11" height="1" viewBox="0 0 11 1"><line stroke="currentColor" stroke-width="1" x1="0" y1="0.5" x2="11" y2="0.5"/></svg>
+        </button>
+        <button class="wc-btn wc-btn-max" id="btn-maximize" title="Maximize">
+          <svg class="ico-max" width="10" height="10" viewBox="0 0 10 10"><rect stroke="currentColor" stroke-width="1" fill="none" x="0.5" y="0.5" width="9" height="9" rx="1"/></svg>
+          <svg class="ico-restore" width="10" height="10" viewBox="0 0 10 10"><rect stroke="currentColor" stroke-width="1" fill="none" x="2" y="0.5" width="7" height="7" rx="1"/><polyline stroke="currentColor" stroke-width="1" fill="none" points="3,3 3,9.5 9.5,9.5 9.5,3"/></svg>
+        </button>
+        <button class="wc-btn wc-btn-close" id="btn-close" title="Close">
+          <svg width="10" height="10" viewBox="0 0 10 10"><line stroke="currentColor" stroke-width="1.2" x1="1" y1="1" x2="9" y2="9"/><line stroke="currentColor" stroke-width="1.2" x1="9" y1="1" x2="1" y2="9"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="app">
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">Folders</span>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-group">
+            <button class="nav-item active" data-view="all">
+              <span class="nav-icon-wrap yellow-bg"><svg viewBox="0 0 24 24" fill="white" stroke="none" width="13" height="13"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/></svg></span>
+              <span>All Notes</span>
+              <span class="nav-badge" id="all-count">0</span>
+            </button>
+            <button class="nav-item" data-view="favorites">
+              <span class="nav-icon-wrap pink-bg"><svg viewBox="0 0 24 24" fill="white" stroke="none" width="13" height="13"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span>
+              <span>Favorites</span>
+              <span class="nav-badge" id="favorites-count">0</span>
+            </button>
+            <button class="nav-item" data-view="recent">
+              <span class="nav-icon-wrap blue-bg"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+              <span>Recently Deleted</span>
+              <span class="nav-badge" id="trash-count">0</span>
+            </button>
+          </div>
+          <div class="nav-group">
+            <div class="nav-group-label">Tags</div>
+            <div id="tags-list"></div>
+            <button class="nav-item nav-item-add" id="add-tag-btn">
+              <span class="nav-icon-wrap gray-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="6" x2="12" y2="18"/><line x1="6" y1="12" x2="18" y2="12"/></svg></span>
+              <span>New Tag</span>
+            </button>
+          </div>
+          <div class="nav-group">
+            <button class="nav-item" id="dark-mode-toggle">
+              <span class="nav-icon-wrap indigo-bg"><svg viewBox="0 0 24 24" fill="white" stroke="none" width="13" height="13"><path d="M21.75 15.5a.75.75 0 0 1-.75.75 9.41 9.41 0 0 1-8.37-5.13.75.75 0 0 1 .75-1.12 8.91 8.91 0 0 0 7.87-4.87.75.75 0 0 1 1.5.18A10.41 10.41 0 0 1 22.5 15a.75.75 0 0 1-.75.5zM12 2.25A9.75 9.75 0 0 0 2.25 12a.75.75 0 0 0 .75.75 9.41 9.41 0 0 0 8.37 5.13.75.75 0 0 0 .75-1.12 8.91 8.91 0 0 1-7.87-4.87.75.75 0 0 0-1.5.18A10.41 10.41 0 0 0 12 21.75a.75.75 0 0 0 .75-.5A9.75 9.75 0 0 0 12 2.25z"/></svg></span>
+              <span>Dark Mode</span>
+              <span class="nav-badge" id="dark-mode-badge">Off</span>
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      <main id="main-content">
+        <div id="notes-list-panel">
+          <div id="toolbar">
+            <h1 id="view-title">All Notes</h1>
+            <div class="toolbar-actions">
+              <div class="search-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="search-input" placeholder="Search">
+              </div>
+              <button class="toolbar-btn" id="new-note-btn" title="New Note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="notes-container">
+            <div id="empty-notes" class="empty-state">
+              <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" width="64" height="64"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg></div>
+              <h2>No Notes</h2>
+              <p>Create a new note to get started</p>
+            </div>
+            <div id="notes-list"></div>
+          </div>
+        </div>
+
+        <div id="editor-panel" class="hidden">
+          <div id="editor-toolbar">
+            <button class="editor-back-btn" id="editor-back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg><span>Notes</span></button>
+            <div class="editor-actions">
+              <button class="editor-action-btn" id="editor-favorite-btn" title="Favorite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" id="editor-fav-icon"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
+              <button class="editor-action-btn danger" id="editor-delete-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+          <div id="editor-content">
+            <div id="editor-title" contenteditable="true" placeholder="Title"></div>
+            <div id="editor-date"></div>
+            <div id="editor-tags">
+              <div id="editor-tags-list"></div>
+              <button class="editor-add-tag-btn" id="editor-add-tag-btn" title="Add tag">+</button>
+              <div class="tag-dropdown hidden" id="tag-dropdown"></div>
+            </div>
+            <div id="editor-body" contenteditable="true" placeholder="Start writing..."></div>
+          </div>
+        </div>
+      </main>
+
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+  </div>
+
+  <div class="dialog-overlay hidden" id="dialog-overlay">
+    <div class="dialog" id="dialog">
+      <div class="dialog-title" id="dialog-title">New Tag</div>
+      <input class="dialog-input" id="dialog-input" type="text" placeholder="Tag name">
+      <div class="dialog-actions">
+        <button class="dialog-btn dialog-btn-cancel" id="dialog-cancel">Cancel</button>
+        <button class="dialog-btn dialog-btn-confirm" id="dialog-confirm">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

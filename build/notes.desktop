@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Notes
+GenericName=Notes
+Comment=iOS-style Notes app for Linux
+Exec=Notes %U
+Icon=notes
+Type=Application
+StartupNotify=true
+StartupWMClass=ios-notes
+Categories=Utility;TextEditor;Office;
+Keywords=notes;text;editor;ios;
+MimeType=text/plain;

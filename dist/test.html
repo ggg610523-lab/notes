@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<div id="root"></div>
+<script type="module">
+import { Component, state, h } from './renderer/core/component.js';
+
+const count = state(0);
+
+class TestApp extends Component {
+  buildContent() {
+    return h('div', null, null,
+      h('p', null, null, 'Count: ' + count.get()),
+      h('button', null, { click: () => count.set(count.get() + 1) }, 'Increment'),
+    );
+  }
+}
+
+const root = document.getElementById('root');
+const app = new TestApp();
+root.appendChild(app.build());
+</script>
+</body>
+</html>
