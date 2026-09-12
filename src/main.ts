@@ -65,6 +65,24 @@ function saveJsonFile<T>(filePath: string, data: T): boolean {
   }
 }
 
+function backupToDrive(): boolean {
+  try {
+    const mount = path.join(os.homedir(), 'Cloud', 'google-drive');
+    const dest = path.join(mount, 'notes-backup', 'latest');
+    if (!fs.existsSync(mount)) return false;
+    fs.mkdirSync(dest, { recursive: true });
+    for (const file of ['notes.json', 'folders.json', 'settings.json']) {
+      const src = path.join(getDataDir(), file);
+      if (fs.existsSync(src)) fs.copyFileSync(src, path.join(dest, file));
+    }
+    console.log('[main] backed up notes to Google Drive');
+    return true;
+  } catch (err) {
+    console.error('[main] backup to Google Drive failed:', err);
+    return false;
+  }
+}
+
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1100,
@@ -128,3 +146,12 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+
+let isQuitting = false;
+app.on('before-quit', (event) => {
+  if (isQuitting) return;
+  event.preventDefault();
+  isQuitting = true;
+  backupToDrive();
+  app.quit();
+});
