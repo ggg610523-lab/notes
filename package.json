@@ -1,0 +1,49 @@
+{
+  "name": "ios-notes",
+  "version": "1.0.0",
+  "description": "iOS-style Notes app for Linux",
+  "main": "dist/main.js",
+  "author": "",
+  "scripts": {
+    "build": "tsc && tsc --target ES2020 --module ES2020 --moduleResolution bundler --lib ES2020,DOM --outDir dist --strict --esModuleInterop --skipLibCheck src/renderer.ts && cp src/index.html dist/ && cp src/styles.css dist/ && mkdir -p dist/fonts && cp src/fonts/* dist/fonts/",
+    "start": "npm run build && electron --no-sandbox --enable-features=UseOzonePlatform --ozone-platform=wayland dist/main.js",
+    "dev": "npm run build && electron --no-sandbox --enable-features=UseOzonePlatform --ozone-platform=wayland dist/main.js",
+    "dist": "npm run build && electron-builder --linux AppImage"
+  },
+  "build": {
+    "appId": "com.ios-notes.app",
+    "productName": "Notes",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/fonts/**/*"
+    ],
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "desktop": {
+        "Name": "Notes",
+        "GenericName": "Notes",
+        "Comment": "iOS-style Notes app for Linux",
+        "Keywords": "notes;text;editor;ios;",
+        "StartupWMClass": "ios-notes"
+      }
+    },
+    "extraResources": []
+  },
+  "dependencies": {
+    "v8-compile-cache": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.0"
+  },
+  "allowScripts": {
+    "electron": true
+  }
+}

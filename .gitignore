@@ -1,0 +1,9 @@
+node_modules/
+release/
+dist/
+build/
+*.AppImage
+*.dmg
+*.exe
+*.deb
+*.rpm
