@@ -1,5 +1,5 @@
 import 'v8-compile-cache';
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
@@ -139,6 +139,42 @@ app.whenReady().then(() => {
 
   ipcMain.handle('save-settings', (_e, settings: Record<string, any>) => {
     return saveJsonFile(getSettingsPath(), settings);
+  });
+
+  ipcMain.handle('load-notes-from-file', async () => {
+    const win = BrowserWindow.getFocusedWindow() ?? mainWindow;
+    if (!win) return null;
+    const result = await dialog.showOpenDialog(win, {
+      title: 'Load notes from backup',
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+      properties: ['openFile'],
+      defaultPath: path.join(os.homedir(), 'Cloud'),
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    const filePath = result.filePaths[0];
+    try {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      const parsed = JSON.parse(data);
+      const raw = Array.isArray(parsed) ? parsed : (parsed.notes ?? []);
+      const notes: Note[] = raw
+        .filter((n: any) => n && typeof n === 'object' && typeof n.id === 'string')
+        .map((n: any) => ({
+          id: n.id,
+          title: typeof n.title === 'string' ? n.title : '',
+          content: typeof n.content === 'string' ? n.content : '',
+          folderId: typeof n.folderId === 'string' ? n.folderId : 'all',
+          favorite: !!n.favorite,
+          tags: Array.isArray(n.tags) ? n.tags.filter((t: any) => typeof t === 'string') : [],
+          deleted: !!n.deleted,
+          createdAt: typeof n.createdAt === 'string' ? n.createdAt : new Date().toISOString(),
+          updatedAt: typeof n.updatedAt === 'string' ? n.updatedAt : new Date().toISOString(),
+        }));
+      console.log('[main] loaded', notes.length, 'notes from', filePath);
+      return notes;
+    } catch (err) {
+      console.error('[main] load-notes-from-file error:', err);
+      return { error: String(err) };
+    }
   });
 
   createWindow();

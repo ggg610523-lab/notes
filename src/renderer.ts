@@ -29,6 +29,7 @@ const notesApi = (window as any).api as {
   saveFolders: (folders: Folder[]) => Promise<boolean>;
   loadSettings: () => Promise<Record<string, any>>;
   saveSettings: (settings: Record<string, any>) => Promise<boolean>;
+  loadNotesFromFile: () => Promise<Note[] | { error: string } | null>;
 };
 
 function escHtml(s: string): string {
@@ -384,6 +385,7 @@ class NotesApp {
     });
 
     document.getElementById('new-note-btn')!.addEventListener('click', () => this.createNote());
+    document.getElementById('load-note-btn')!.addEventListener('click', () => this.loadNotesFromFile());
     document.getElementById('editor-back-btn')!.addEventListener('click', () => this.closeEditor().then());
     this.editorFavBtn.addEventListener('click', () => this.toggleFavorite());
     document.getElementById('editor-delete-btn')!.addEventListener('click', () => this.deleteCurrentNote());
@@ -588,6 +590,21 @@ class NotesApp {
     el.addEventListener('contextmenu', (e: MouseEvent) => { e.preventDefault(); this.showContextMenu(e, note); });
 
     return el;
+  }
+
+  private async loadNotesFromFile(): Promise<void> {
+    if (!window.confirm('Load notes from a backup JSON file? This replaces your current notes.')) return;
+    this.removeContextMenu();
+    const res = await notesApi.loadNotesFromFile();
+    if (res === null) return;
+    if ('error' in res) { this.showToast('Could not load that file'); return; }
+    await this.closeEditor();
+    this.notes = res;
+    await this.saveData();
+    this.applyFilters();
+    this.updateCounts();
+    this.renderTags();
+    this.showToast(res.length === 1 ? 'Loaded 1 note' : `Loaded ${res.length} notes`);
   }
 
   private async createNote(): Promise<void> {

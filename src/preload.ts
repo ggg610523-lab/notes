@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld('api', {
   saveFolders: (folders: any[]) => ipcRenderer.invoke('save-folders', folders),
   loadSettings: () => ipcRenderer.invoke('load-settings'),
   saveSettings: (settings: any) => ipcRenderer.invoke('save-settings', settings),
+  loadNotesFromFile: () => ipcRenderer.invoke('load-notes-from-file'),
 });
